@@ -112,9 +112,27 @@ class ConversationScrollArea(QScrollArea):
         self.setWidgetResizable(True)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
+
+class SpeechBubble(QWidget):
+    def __init__(self, string_index):
+        super().__init__()
+
+        self.setStyleSheet("QLabel { background-color: #CFCFCF; }")
+        layout = QHBoxLayout()
+        self.setLayout(layout)
+        self.label = QLabel()
+        self.label.setWordWrap(True)
+        self.label.setText(strings[string_index])
+
+        if string_index % 2:
+            layout.addWidget(self.label, alignment=Qt.AlignLeft)
+        else:
+            layout.addWidget(self.label, alignment=Qt.AlignRight)
+
     def resizeEvent(self, event):
-        self.widget().setFixedWidth(event.size().width())
+        self.label.setFixedWidth(event.size().width() * 0.67)
         super().resizeEvent(event)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -127,15 +145,7 @@ if __name__ == "__main__":
     scroll_widget.setLayout(scroll_widget_layout)
 
     for i in range(len(strings)):
-        bubble = QWidget()
-        bubble.setStyleSheet("QLabel { background-color: #CFCFCF; }")
-        bubble_layout = QHBoxLayout()
-        bubble.setLayout(bubble_layout)
-        label = QLabel()
-        label.setWordWrap(True)
-        label.setText(strings[i])
-        bubble_layout.addWidget(label, stretch=2)
-        bubble_layout.addWidget(QWidget(), stretch=1)
+        bubble = SpeechBubble(i)
         scroll_widget_layout.addWidget(bubble)
 
     central_layout = QHBoxLayout()
