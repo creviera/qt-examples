@@ -105,12 +105,21 @@ Nunc gravida, lorem ut volutpat malesuada, neque mi sodales massa, ut malesuada 
     """,
 ]
 
+class ConversationScrollArea(QScrollArea):
+    def __init__(self):
+        super().__init__()
+
+        self.setWidgetResizable(True)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+    def resizeEvent(self, event):
+        self.widget().setFixedWidth(event.size().width())
+        super().resizeEvent(event)
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    scroll = QScrollArea()
-    scroll.setWidgetResizable(True)
-    scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+    scroll = ConversationScrollArea()
     scroll_widget = QWidget()
     scroll_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
     scroll.setWidget(scroll_widget)
