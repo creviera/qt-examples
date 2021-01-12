@@ -117,7 +117,7 @@ class SpeechBubble(QWidget):
     def __init__(self, string_index):
         super().__init__()
 
-        self.setStyleSheet("QLabel { background-color: #CFCFCF; }")
+        self.setStyleSheet("QLabel { background-color: #CFCFCF; padding: 4px;}")
         layout = QHBoxLayout()
         self.setLayout(layout)
         self.label = QLabel()
@@ -125,9 +125,11 @@ class SpeechBubble(QWidget):
         self.label.setText(strings[string_index])
 
         if string_index % 2:
-            layout.addWidget(self.label, alignment=Qt.AlignLeft)
+            layout.addWidget(self.label)
+            layout.addWidget(QWidget())
         else:
-            layout.addWidget(self.label, alignment=Qt.AlignRight)
+            layout.addWidget(QWidget())
+            layout.addWidget(self.label)
 
     def resizeEvent(self, event):
         self.label.setFixedWidth(event.size().width() * 0.67)
