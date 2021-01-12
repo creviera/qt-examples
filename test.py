@@ -17,7 +17,10 @@ from PySide6.QtWidgets import (
 
 strings = [
     """
-The next message will demonstrate how the "fitted text" issue does not occur outside of the client.
+beep
+    """,
+    """
+boop
     """,
     """
 thisisalongwordwithoutspacesordashesthisisalongwordwithoutspacesordashesthisisalongwordwithoutspacesordashesthisisalongwordwithoutspacesordashesthisisalongwordwithoutspacesordashesthisisalongwordwithoutspacesordashesthisisalongwordwithoutspacesordashesthisisalongwordwithoutspacesordashesthisisalongwordwithoutspacesordashesthisisalongwordwithoutspacesordashesthisisalongwordwithoutspacesordashesthisisalongwordwithoutspacesordashesthisisalongwordwithoutspacesordashesthisisalongwordwithoutspacesordashesthisisalongwordwit💩houtspacesordashes
@@ -105,6 +108,7 @@ Nunc gravida, lorem ut volutpat malesuada, neque mi sodales massa, ut malesuada 
     """,
 ]
 
+
 class ConversationScrollArea(QScrollArea):
     def __init__(self):
         super().__init__()
@@ -117,23 +121,79 @@ class SpeechBubble(QWidget):
     def __init__(self, string_index):
         super().__init__()
 
-        self.setStyleSheet("QLabel { background-color: #CFCFCF; padding: 4px;}")
+        self.setStyleSheet("#Label { background-color: #CFCFCF; padding: 4px;}")
         layout = QHBoxLayout()
         self.setLayout(layout)
         self.label = QLabel()
+        self.label.setObjectName("Label")
         self.label.setWordWrap(True)
         self.label.setText(strings[string_index])
 
-        if string_index % 2:
-            layout.addWidget(self.label)
-            layout.addWidget(QWidget())
+        if not string_index % 2:
+            self.bubble_area = QWidget()
+            bubble_area_layout = QHBoxLayout()
+            bubble_area_layout.setContentsMargins(0, 28, 0, 10)
+            self.bubble_area.setLayout(bubble_area_layout)
+            bubble_area_layout.addWidget(self.label)
+
+            layout.addWidget(self.bubble_area, alignment=Qt.AlignLeft)
         else:
-            layout.addWidget(QWidget())
-            layout.addWidget(self.label)
+            error_message = QLabel("Failed to send")
+            error_message.setWordWrap(False)
+            error_message.setObjectName("ReplyWidget_failed_to_send_text")
+            error_icon = QLabel("!")
+            error_icon.setFixedSize(QSize(12, 12))
+            error_layout = QHBoxLayout()
+            error_layout.setContentsMargins(0, 0, 0, 0)
+            error_layout.setSpacing(4)
+            error_layout.addWidget(error_message)
+            error_layout.addWidget(error_icon)
+            error = QWidget()
+            error.setFixedWidth(120)
+            error.setLayout(error_layout)
+
+            sender_icon = SenderIcon()
+
+            color_bar = QWidget()
+            color_bar.setStyleSheet("#Label { background-color: #777; padding: 2px;}")
+
+            self.speech_bubble = QWidget()
+            speech_bubble_layout = QVBoxLayout()
+            self.speech_bubble.setLayout(speech_bubble_layout)
+            speech_bubble_layout.addWidget(self.label)
+            speech_bubble_layout.addWidget(color_bar)
+            speech_bubble_layout.setContentsMargins(0, 0, 0, 0)
+            speech_bubble_layout.setSpacing(0)
+
+            self.bubble_area = QWidget()
+            self.bubble_area.setLayoutDirection(Qt.RightToLeft)
+            self.bubble_area_layout = QHBoxLayout()
+            self.bubble_area.setLayout(self.bubble_area_layout)
+            self.bubble_area_layout.addWidget(sender_icon, alignment=Qt.AlignBottom)
+            self.bubble_area_layout.addWidget(self.speech_bubble)
+            self.bubble_area_layout.addWidget(error)
+
+            # layout.addWidget(QWidget())
+            layout.addStretch()
+            layout.addWidget(self.bubble_area, alignment=Qt.AlignRight)
 
     def resizeEvent(self, event):
         self.label.setFixedWidth(event.size().width() * 0.67)
+        # self.bubble_area.setFixedWidth(event.size().width() * 0.67)
         super().resizeEvent(event)
+
+
+class SenderIcon(QWidget):
+    def __init__(self) -> None:
+        super().__init__()
+        self.setFixedSize(QSize(48, 48))
+        self.label = QLabel('AC')
+        self.label.setAlignment(Qt.AlignCenter)
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        layout.addWidget(self.label)
+        self.setLayout(layout)
 
 
 if __name__ == "__main__":
